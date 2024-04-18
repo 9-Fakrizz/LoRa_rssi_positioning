@@ -10,6 +10,7 @@ int sampleRSSI[sample_index] ={0};
 int pre_freq = 0;
 int last_freq = 0;
 int winner_value;
+//int packet_count=0;
 
 void setup() 
 {
@@ -36,30 +37,31 @@ void loop()
   int packet_count=0;
   
   // get rssi sample
-  while(packet_count < sample_index){
+  while(packet_count < 50){
     // Get RSSI of the connected network
     int packetSize = LoRa.parsePacket();    // try to parse packet
     if (packetSize) 
     {
-      sampleRSSI[packet_count] = LoRa.packetRssi();
+      //sampleRSSI[packet_count] = LoRa.packetRssi();
       //Serial.print("  ");
       //Serial.print(sampleRSSI[packet_count]);
+      Serial.println(LoRa.packetRssi());
       packet_count += 1;
     }
   }
-  //Serial.println();
+ delay(5000);
 
-  // calculate to find population.
-  for(int i = 0; i < sample_index; i++){
-    int last_freq = 0;
-    for(int j = i; j < sample_index; j++){
-      if(sampleRSSI[i] == sampleRSSI[j])last_freq +=1;
-    }
-    if(last_freq > pre_freq) winner_value = sampleRSSI[i];
-    pre_freq = last_freq;
-    last_freq = 0;
-  }
-  Serial.print(" WINNER : ");
-  Serial.println(winner_value);
+//  // calculate to find population.
+//  for(int i = 0; i < sample_index; i++){
+//    int last_freq = 0;
+//    for(int j = i; j < sample_index; j++){
+//      if(sampleRSSI[i] == sampleRSSI[j])last_freq +=1;
+//    }
+//    if(last_freq > pre_freq) winner_value = sampleRSSI[i];
+//    pre_freq = last_freq;
+//    last_freq = 0;
+//  }
+//  Serial.print(" WINNER : ");
+//  Serial.println(winner_value);
 
 }
