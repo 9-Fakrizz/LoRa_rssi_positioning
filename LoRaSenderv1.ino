@@ -30,11 +30,10 @@ void loop()
   Serial.println(counter);
  
   LoRa.beginPacket();   //Send LoRa packet to receiver
-  LoRa.print("hello ");
+  LoRa.print("hi");
   LoRa.print(counter);
   LoRa.endPacket();
- 
   counter++;
  
-  delay(2000);
+  delay(1000);
 }
