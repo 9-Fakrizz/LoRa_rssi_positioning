@@ -5,7 +5,7 @@
 #define rst 14
 #define dio0 2
  
-const int sample_index = 5;
+const int sample_index = 3;
 int sampleRSSI[sample_index] ={0};
 int pre_freq = 0;
 int last_freq = 0;
@@ -37,31 +37,36 @@ void loop()
   int packet_count=0;
   
   // get rssi sample
-  while(packet_count < 50){
+  while(packet_count < sample_index){
     // Get RSSI of the connected network
     int packetSize = LoRa.parsePacket();    // try to parse packet
     if (packetSize) 
     {
-      //sampleRSSI[packet_count] = LoRa.packetRssi();
-      //Serial.print("  ");
-      //Serial.print(sampleRSSI[packet_count]);
-      Serial.println(LoRa.packetRssi());
+      sampleRSSI[packet_count] = LoRa.packetRssi();
+      // Serial.print("  ");
+      // Serial.print(sampleRSSI[packet_count]);
       packet_count += 1;
     }
   }
- delay(5000);
-
-//  // calculate to find population.
-//  for(int i = 0; i < sample_index; i++){
-//    int last_freq = 0;
-//    for(int j = i; j < sample_index; j++){
-//      if(sampleRSSI[i] == sampleRSSI[j])last_freq +=1;
-//    }
-//    if(last_freq > pre_freq) winner_value = sampleRSSI[i];
-//    pre_freq = last_freq;
-//    last_freq = 0;
-//  }
+  //Serial.println();
+ // calculate to find population.
+ for(int i = 0; i < sample_index; i++){
+   int last_freq = 0;
+   for(int j = i; j < sample_index; j++){
+     if(sampleRSSI[i] == sampleRSSI[j])last_freq +=1;
+   }
+   if(last_freq > pre_freq) winner_value = sampleRSSI[i];
+   pre_freq = last_freq;
+   last_freq = 0;
+ }
 //  Serial.print(" WINNER : ");
 //  Serial.println(winner_value);
+
+ float distance = 0.0;
+ // pridict centimeter by using linear equation
+ distance = (winner_value + 92.4424) / -0.0234 ;
+ //Serial.print(" Distance : ");
+ Serial.print(distance/100.0);
+ Serial.println("m ");
 
 }
