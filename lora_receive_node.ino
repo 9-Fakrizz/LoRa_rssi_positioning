@@ -2,15 +2,14 @@
 #include <SPI.h>
  
 #define ss 5
-#define rst 14
+#define rst 4
 #define dio0 2
  
-const int sample_index = 3;
-int sampleRSSI[sample_index] ={0};
+const int sample_index = 5;
+int sampleRSSI[sample_index] ={};
 int pre_freq = 0;
 int last_freq = 0;
 int winner_value;
-//int packet_count=0;
 
 void setup() 
 {
@@ -20,7 +19,7 @@ void setup()
  
   LoRa.setPins(ss, rst, dio0);    //setup LoRa transceiver module
  
-  while (!LoRa.begin(433E6))     //433E6 - Asia, 866E6 - Europe, 915E6 - North America
+  while (!LoRa.begin(455E6))     //433E6 - Asia, 866E6 - Europe, 915E6 - North America
   {
     Serial.println(".");
     delay(500);
@@ -31,7 +30,7 @@ void setup()
  
 void loop() 
 {
-  int sampleRSSI[sample_index] ={0};
+  int sampleRSSI[sample_index] ={};
   int pre_freq = 0;
   int winner_value;
   int packet_count=0;
@@ -40,33 +39,26 @@ void loop()
   while(packet_count < sample_index){
     // Get RSSI of the connected network
     int packetSize = LoRa.parsePacket();    // try to parse packet
-    if (packetSize) 
+    if (packetSize && LoRa.packetSnr() >= 8.50) // filter Snr
     {
       sampleRSSI[packet_count] = LoRa.packetRssi();
       // Serial.print("  ");
       // Serial.print(sampleRSSI[packet_count]);
+      // Serial.print(" Snr: " + String(LoRa.packetSnr()));
       packet_count += 1;
     }
   }
-  //Serial.println();
- // calculate to find population.
- for(int i = 0; i < sample_index; i++){
-   int last_freq = 0;
-   for(int j = i; j < sample_index; j++){
-     if(sampleRSSI[i] == sampleRSSI[j])last_freq +=1;
-   }
-   if(last_freq > pre_freq) winner_value = sampleRSSI[i];
-   pre_freq = last_freq;
-   last_freq = 0;
- }
-//  Serial.print(" WINNER : ");
-//  Serial.println(winner_value);
+  Serial.println();
 
- float distance = 0.0;
- // pridict centimeter by using linear equation
- distance = (winner_value + 92.4424) / -0.0234 ;
- //Serial.print(" Distance : ");
- Serial.print(distance/100.0);
- Serial.println("m ");
-
+  // calculate to find population.
+  for(int i = 0; i < sample_index; i++){
+    int last_freq = 0;
+    for(int j = i; j < sample_index; j++){
+      if(sampleRSSI[i] == sampleRSSI[j])last_freq +=1;
+    }
+    if(last_freq > pre_freq) winner_value = sampleRSSI[i];
+    pre_freq = last_freq;
+  }
+  Serial.print(" WINNER : ");
+  Serial.println(winner_value);
 }
