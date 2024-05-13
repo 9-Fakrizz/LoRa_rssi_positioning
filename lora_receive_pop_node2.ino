@@ -51,16 +51,16 @@ void loop()
   while(packet_count < sample_index){
     // Get RSSI of the connected network
     int packetSize = LoRa.parsePacket();    // try to parse packet
-    if (packetSize && LoRa.packetSnr() >= 8.00) // filter Snr
+    if (packetSize && LoRa.packetSnr() <= 9.00) // filter Snr  && LoRa.packetSnr() >= 8.00
     {
       sampleRSSI[packet_count] = LoRa.packetRssi();
-      // Serial.print("  ");
-      // Serial.print(sampleRSSI[packet_count]);
-      // Serial.print(" Snr: " + String(LoRa.packetSnr()));
+      Serial.print("  ");
+      Serial.print(sampleRSSI[packet_count]);
+      Serial.println(" Snr: " + String(LoRa.packetSnr()));
       packet_count += 1;
     }
   }
-  //Serial.println();
+  Serial.println();
 
   // calculate to find population.
   for(int i = 0; i < sample_index; i++){
@@ -75,8 +75,25 @@ void loop()
   // Serial.print(" WINNER : ");
   Serial.println(winner_value);
 
-  if(winner_value == 85)distance = 0;
+  if (winner_value <= 94)
+      distance = 0;
+  else if (winner_value >= 95 && winner_value <= 94)
+      distance = 1;
+  else if (winner_value >= 95 && winner_value <= 96)
+      distance = 2;
+  else if (winner_value >= 97 && winner_value <= 99)
+      distance = 3;
+  else if (winner_value >= 100 && winner_value <= 101)
+      distance = 4;
+  else if (winner_value >= 102 && winner_value <= 104)
+      distance = 5;
+  else if (winner_value >= 105 && winner_value <= 106)
+      distance = 6;
+  else if (winner_value >= 107)
+      distance = 7;
 
+  Serial.print(" distance : ");
+  Serial.println(distance);
 }
 void receiveEvent(int) {
  
@@ -105,3 +122,14 @@ void requestEvent() {
   Wire.write(response,sizeof(response));
   Serial.println("Request event");
 }
+  /*444mhz
+  -88 is zero set when we found -85 then we turn on LED 
+  0 is 87-88 (this time is 1.65m)
+  90-91 is 1.0m
+  94-96 is 2.0m
+  95-97 is 3.0m
+  96-97 is 4.0m
+  98-99 is 5.0m
+  99-101 is 6.0m
+  102++ is 7.0m++
+  */
