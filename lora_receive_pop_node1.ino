@@ -17,6 +17,7 @@ int pre_freq = 0;
 int last_freq = 0;
 int winner_value;
 int distance = 0;
+int slide_value = 19;
 
 void setup() 
 {
@@ -51,7 +52,7 @@ void loop()
   while(packet_count < sample_index){
     // Get RSSI of the connected network
     int packetSize = LoRa.parsePacket();    // try to parse packet
-    if (packetSize && LoRa.packetSnr() >= 8.00) // filter Snr
+    if (packetSize ) // filter Snr && LoRa.packetSnr() <= 9.00
     {
       sampleRSSI[packet_count] = LoRa.packetRssi();
       // Serial.print("  ");
@@ -72,10 +73,31 @@ void loop()
     pre_freq = last_freq;
   }
   winner_value = abs(winner_value);
-  // Serial.print(" WINNER : ");
+  Serial.print(" WINNER : ");
   Serial.println(winner_value);
 
-  if(winner_value == 85)distance = 0;
+  if (winner_value == 85 + slide_value)
+    distance = 0;
+  else if (winner_value >= 87+slide_value && winner_value <= 91+slide_value)
+      distance = 1;
+  else if (winner_value >= 92+slide_value && winner_value <= 93+slide_value)
+      distance = 2;
+  else if (winner_value == 94+slide_value)
+      distance = 3;
+  else if (winner_value >= 95+slide_value && winner_value <= 96+slide_value)
+      distance = 4;
+  else if (winner_value >= 97+slide_value && winner_value <= 98+slide_value)
+      distance = 5;
+  else if (winner_value >= 99+slide_value && winner_value <= 100+slide_value)
+      distance = 6;
+  else if (winner_value >= 101+slide_value && winner_value <= 103+slide_value)
+      distance = 7;
+  else if (winner_value > 103+slide_value)
+      distance = 8;
+
+  Serial.print(" DISTANCE : ");
+  Serial.print(distance);
+  Serial.println("  m ");
 
 }
 void receiveEvent(int) {
