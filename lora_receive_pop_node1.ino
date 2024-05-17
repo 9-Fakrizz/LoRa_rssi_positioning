@@ -17,7 +17,7 @@ int pre_freq = 0;
 int last_freq = 0;
 int winner_value;
 int distance = 0;
-int slide_value = 19;
+int slide_value = 1;
 
 void setup() 
 {
