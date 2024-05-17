@@ -3,7 +3,7 @@
 #include <Wire.h>
 
 // Define Slave I2C Address
-#define SLAVE_ADDR 7
+#define SLAVE_ADDR 6
 // Define Slave answer size
 #define ANSWERSIZE 1
 
@@ -75,7 +75,20 @@ void loop()
   // Serial.print(" WINNER : ");
   Serial.println(winner_value);
 
-  if(winner_value == 85)distance = 0;
+  if (winner_value == 87 || winner_value == 88)
+      distance = 0;
+  else if (winner_value >= 90 && winner_value <= 92)
+      distance = 1;
+  else if (winner_value >= 94 && winner_value <= 95)
+      distance = 2;
+  else if (winner_value >= 96 && winner_value <= 97)
+      distance = 3;
+  else if (winner_value == 98)
+      distance = 4;
+  else if (winner_value >= 99 && winner_value <= 100)
+      distance = 5;
+  else if (winner_value >= 101)
+      distance = 6;
 
 }
 void receiveEvent(int ){
